@@ -4,11 +4,13 @@
   { "name": "databases" },
   { "name": "documents" },
   { "name": "pouchdb" },
+  { "name": "config" },
   { "name": "replication" },
   { "name": "plugins" },
   { "name": "contribute" },
   { "name": "permissions" },
   { "name": "compaction" },
+  { "name": "auth" },
   { "name": "verifyinstall" }
   ],
     "template": {
