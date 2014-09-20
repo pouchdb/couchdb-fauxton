@@ -15,13 +15,14 @@ the License.
 <div id="doc">
   <div class="errors-container"></div>
    
-<div class="nav">
+<div id="doc-actions" class="nav">
   <div class="span3">
-    <button class="save-doc btn btn-success save" type="button"><i class="icon fonticon-circle-check"></i> Save</button>
+    <button class="save-doc btn btn-success save" type="button"><i class="icon fonticon-ok-circled"></i> Save</button>
     <button class="btn cancel-button">Back to _all_docs</button>
   </div>
 
   <div class="span7">
+    <button class="btn string-edit" title="Edit line" disabled="true"><i class="icon icon-edit"></i></button>
     <% if (attachments) { %>
     <div class="btn-group">
       <button class="dropdown-toggle btn" data-bypass="true" data-toggle="dropdown">
@@ -31,7 +32,7 @@ the License.
       <ul class="dropdown-menu">
         <%_.each(attachments, function (att) { %>
         <li>
-        <a href="<%- att.url %>" target="_blank"> <strong> <%- att.fileName %> </strong> -
+        <a href="<%- att.url %>" target="_blank" data-bypass="true"> <strong> <%- att.fileName %> </strong> -
           <span> <%- att.contentType %>, <%- formatSize(att.size)%> </span>
         </a>
         </li>
@@ -41,13 +42,12 @@ the License.
     <% } %> 
     <button class="btn upload"><i class="icon icon-circle-arrow-up"></i> Upload Attachment</button>
     <button class="btn duplicate"><i class="icon icon-repeat"></i> Clone document</button>
+    <button class="btn btn-danger delete"><i class="icon icon-trash"></i></button>
   </div>
-
-  <button class="btn btn-danger delete"><i class="icon icon-trash"></i></button>
-  </ul>
 
 <div id="upload-modal"> </div>
 <div id="duplicate-modal"> </div> 
+<div id="string-edit-modal"> </div>
 </div>
 
   <div id="editor-container" class="doc-code"><%- JSON.stringify(doc.attributes, null, "  ") %></div>

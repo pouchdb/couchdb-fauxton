@@ -28,7 +28,6 @@ define([
   // Plugins.
   "plugins/backbone.layoutmanager",
   "plugins/jquery.form"
-
 ],
 
 function(app, $, _, Backbone, Bootstrap, Helpers, Utils, FauxtonAPI, Couchdb) {

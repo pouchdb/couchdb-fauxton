@@ -44,7 +44,6 @@ function(app, FauxtonAPI, PagingCollection) {
     };
   })();
 
-
   Documents.Doc = FauxtonAPI.Model.extend({
     idAttribute: "_id",
     documentation: function(){
@@ -396,6 +395,7 @@ function(app, FauxtonAPI, PagingCollection) {
       return "docs";
     },
     initialize: function(_models, options) {
+      this.viewMeta = options.viewMeta;
       this.database = options.database;
       this.params = _.clone(options.params);
 
@@ -482,6 +482,14 @@ function(app, FauxtonAPI, PagingCollection) {
       });
 
       return PagingCollection.prototype.parse.call(this, resp);
+    },
+
+    clone: function () {
+      return new this.constructor(this.models, {
+        database: this.database,
+        params: this.params,
+        paging: this.paging
+      });
     }
   });
 

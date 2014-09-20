@@ -12,19 +12,31 @@ License for the specific language governing permissions and limitations under
 the License.
 -->
 
-<button class="btn btn-primary pull-right api-url-btn">
+<a class="btn btn-primary pull-right api-url-btn">
+  <i class="fonticon-link icon"></i>
   API URL
-  <i class="fonticon-plus icon"></i>
-</button>
-<div class="api-navbar" style="display: none">
+</a>
+<div class="clearfix"></div>
+<div class="api-navbar tray">
     <div class="input-prepend input-append">
       <span class="add-on">
-        API reference
-        <a class="help-link" href="<%-getDocUrl(documentation)%>" target="_blank">
+        API URL
+        <a class="help-link" data-bypass="true" href="<%-getDocUrl(documentation)%>" target="_blank">
           <i class="icon-question-sign"></i>
         </a>
       </span>
-      <input type="text" class="input-xxlarge" value="<%- endpoint %>">
-      <a data-bypass="true" href="<%- endpoint %>" target="_blank" class="btn">Show me</a>
+      <input id="api-url-text" type="text" class="input-xxlarge" value="<%- endpoint %>">
+      <a class="btn copy-url" data-clipboard-target="api-url-text">
+        <i class="fonticon-clipboard icon"></i>
+        Copy
+      </a>
+
+      <div class="add-on">
+        <a data-bypass="true" href="<%- endpoint %>" target="_blank" class="btn">
+          <i class="fonticon-eye icon"></i>
+          View JSON
+        </a>
+      </div>
     </div>
 </div>
+

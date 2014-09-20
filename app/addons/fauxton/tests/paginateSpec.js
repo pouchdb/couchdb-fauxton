@@ -22,7 +22,11 @@ define([
 
   describe('IndexPaginate', function () {
     var viewSandbox, paginate, collection, navigateMock;
-    beforeEach(function () {
+    app.resizeColumns = {
+      onResizeHandler: function () {}
+    };
+
+    beforeEach(function (done) {
       collection = new Models.IndexCollection([{
         id:'myId1',
         doc: 'num1'
@@ -43,7 +47,7 @@ define([
         canShowNextfn: function () { return true;}
       });
       viewSandbox = new ViewSandbox();
-      viewSandbox.renderView(paginate); 
+      viewSandbox.renderView(paginate, done);
     });
 
     afterEach(function () {

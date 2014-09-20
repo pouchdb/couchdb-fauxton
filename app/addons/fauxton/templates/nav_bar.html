@@ -19,7 +19,7 @@ the License.
 </div>
 
 <nav id="main_navigation">
-  <ul id="nav-links" class="nav pull-right">
+  <ul id="nav-links" class="nav">
     <% _.each(navLinks, function(link) { %>
     <% if (link.view) {return;}  %>
         <li data-nav-name= "<%- link.title %>" >
@@ -34,7 +34,7 @@ the License.
   <div id="bottom-nav">
   	<ul id="bottom-nav-links" class="nav">
         <li data-nav-name= "Documentation">
-            <a href="<%-getDocUrl('docs')%>" target="_blank">
+            <a data-bypass="true" href="<%-getDocUrl('docs')%>" target="_blank">
               <i class="fonticon-bookmark fonticon"></i>
                 Documentation
             </a>
@@ -70,5 +70,5 @@ the License.
       <% }); %>
     </ul>
   </div>
-  <div class="version"></div>
+  <div class="js-version"></div>
 </div>
