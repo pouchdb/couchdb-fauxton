@@ -6,6 +6,8 @@
 // Global values
 // --------------------------------------------------
 
+@brandPrimary: darken(#6ccb99, 5%);
+@brandPrimaryDark: darken(@brandPrimary, 10%);
 
 // Grays
 // -------------------------
@@ -38,8 +40,8 @@
 
 // Links
 // -------------------------
-@linkColor:             #08c;
-@linkColorHover:        darken(@linkColor, 15%);
+@linkColor:             @brandPrimaryDark;
+@linkColorHover:        darken(@linkColor, 10%);
 
 
 // Typography
@@ -94,8 +96,8 @@
 @btnInfoBackground:                 #5bc0de;
 @btnInfoBackgroundHighlight:        #2f96b4;
 
-@btnSuccessBackground:              #62c462;
-@btnSuccessBackgroundHighlight:     #51a351;
+@btnSuccessBackground:              @navBG;
+@btnSuccessBackgroundHighlight:     @navBGHover;
 
 @btnWarningBackground:              lighten(@orange, 15%);
 @btnWarningBackgroundHighlight:     @orange;
