@@ -13,6 +13,12 @@
 
 /* = color variables
    ---------------------------------------------------------------------- */
+
+@brandAccent: #fa3649;
+@brandAccentDark: darken(@brandAccent, 10%);
+@brandPrimary: darken(#6ccb99, 5%);
+@brandPrimaryDark: darken(@brandPrimary, 10%);
+
 @brown: #3A2C2B;
 @red: #E33F3B;
 @darkRed: #AF2D24;
@@ -28,18 +34,13 @@
 
 /*nav*/
 @primaryNav : @brown;
-@navBG: @darkRed;
-@navBGHighlight: @red;
-@navBGHover: @red;
-@navIconColor: @darkRed;
+@navBG: @brandPrimary;
+@navBGHighlight: @brandPrimaryDark;
+@navBGHover: @brandPrimaryDark;
+@navIconColor: @brandPrimaryDark;
 @navIconHighlight: #FFFFFF;
 @bottomNav: @greyBrown;
 
-/*top header*/
-@breadcrumbBG: #F1F1F1;
-@breadcrumbText: @red;
-@breadcrumbArrow: #999999;
-@breadcrumbBorder: @red;
 
 /*background colors*/
 @background: #F2F2F2;
@@ -48,7 +49,7 @@
 @defaultText: #4D4D4D;
 @defaultHTag: #333333;
 
-@saveButton: #80A221;
+@saveButton: @brandPrimaryDark;
 
 @collapsedNavWidth: 64px;
 @navWidth: 220px;
@@ -61,16 +62,22 @@
 
 
 /*buttons */
-@redButton: @red;
-@linkColor: @red;
+@redButton: @brandPrimaryDark;
+@linkColor: @brandPrimaryDark;
+@linkColorHover: @brandPrimaryDark;
 @blue:                  #049cdb;
 @blueDark:              #0064cd;
-@green:                 #7FA30C;
-//@red:                   #9d261d;
+@green:                 @brandPrimaryDark;
+@red:                   @brandAccent;
 @yellow:                #ffcc00;
 @pink:                  #c3325f;
 @purple:                #7a43b6;
 
+/*top header*/
+@breadcrumbBG: #F1F1F1;
+@breadcrumbText: @linkColor;
+@breadcrumbArrow: #999999;
+@breadcrumbBorder: @linkColorHover;
 
 
 

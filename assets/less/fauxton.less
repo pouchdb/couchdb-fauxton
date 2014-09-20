@@ -54,7 +54,7 @@ a:active {
 }
 
 a:hover {
-  color: @red;
+  color: @linkColorHover;
 }
 
 input[type=text],
@@ -104,8 +104,8 @@ select {
     border-right: none;
     &:hover,
     &:focus {
-      background-color: @linkRed;
-      border-top: 1px solid @red;
+      background-color: @navBG;
+      border-top: 1px solid @navBGHover;
       color: white;
     }
   }
@@ -153,7 +153,7 @@ table tr td{
   }
 }
 thead {
-  border-bottom: 2px solid @redButton;
+  border-bottom: 2px solid @navBG;
 }
 tbody {
   padding-top: 10px;
@@ -206,7 +206,7 @@ tbody {
   }
 }
 .btn-primary {
-  background: @redButton;
+  background: @navBG;
 }
 
 .btn-primary a:visited {
@@ -375,6 +375,7 @@ table.databases {
   }
   .navbar {
      .burger{
+        cursor: pointer;
         .transition(all @transitionSpeed @transitionEaseType);
         padding: 22px 0 0 18px;
         position: fixed;
@@ -392,7 +393,7 @@ table.databases {
           margin: 2px 0px;
         }
         &:hover div{
-          background-color: @orange;
+          background-color: @navBGHover;
         }
       }
       .bottom-container {
@@ -400,7 +401,7 @@ table.databases {
        position: fixed;
        bottom: 0;
        width: 220px;
-       background: #3a2c2b;
+       background: @primaryNav;
        .brand {
          .box-sizing(content-box);
          .hide-text;
@@ -410,7 +411,7 @@ table.databases {
          height: 40px;
          padding: 10px;
          float: none;
-         background: #3a2c2b;
+         background: @primaryNav;
          .icon {
            .box-sizing(content-box);
            background: url(../img/pouchdb-site.png) no-repeat 0 0;
@@ -429,7 +430,7 @@ table.databases {
        li {
        a {
          font-size: 12px;
-         color: @red;
+         color: @linkColor;
          padding: 12px;
          text-shadow: none;
        }
@@ -460,9 +461,9 @@ table.databases {
           min-height: 48px;
           &.active, &:hover{
             a{
-              .box-shadow(none);
+                text-shadow: 0 1px rgba(0, 0, 0, 0.2);
             }
-            background-color: @red;
+            background-color: @navBGHover;
           }
           &:hover .fonticon:before{
             color: @white;
@@ -501,20 +502,20 @@ table.databases {
       ul#footer-nav-links{
         li{
           background-color: @primaryNav;
-          border-top: 1px solid @red;
+          border-top: 1px solid @linkColorHover;
           border-bottom: none;
           font-size: 12px;
           padding: 12px;
           min-height: 44px;
           &.active, &:hover{
-            background-color: @linkRed;
-            border-top: 1px solid @red;
+            background-color: @linkColor;
+            border-top: 1px solid @linkColorHover;
             a{
               color: white;
             }
           }
           a{
-            color: @red;
+            color: @linkColor;
           }
         }
 
@@ -525,9 +526,7 @@ table.databases {
         li{
           min-height: 55px;
           background-color: @bottomNav;
-          &.active{
-            background-color:@linkRed;
-          }
+          &.active,
           &:hover{
             background-color: @navBGHover;
           }
@@ -665,14 +664,14 @@ table.databases {
     }
     > li > a:hover,
     > li > a:focus{
-      background-color: @darkRed;
+      background-color: @navBG;
       color: #fff;
     }
     li.active > a {
-      color: @darkRed;
+      color: @navBGHover;
     }
     > li > a{
-      color: @linkRed;
+      color: @linkColor;
       padding: 10px 13px 10px 24px;
       border-bottom: 1px solid #d3d7db;
       span{
@@ -697,7 +696,7 @@ table.databases {
       text-shadow: none;
       color: #333333;
       & > span:hover {
-        color: @red;
+        color: @linkColor;
       }
     }
   }
@@ -798,7 +797,7 @@ table.databases {
     content: "\00d7";
     text-shadow: 1px 1px 1px rgba(0, 0, 0, .2);
     font-size: 16px;
-    background-color: @red;
+    background-color: @linkColorHover;
     color: white;
     text-align: center;
     line-height: 15px;
@@ -890,7 +889,7 @@ div.spinner {
       transition: background-color 100ms linear;
     }
     .btn{
-      background-color: @red;
+      background-color: @navBG;
       color: #fff;
       margin-left: -1px;
       padding: 10px 10px 8px;
@@ -898,7 +897,7 @@ div.spinner {
       line-height: 1.5em;
       .border-radius(5px);
       &:hover{
-        background-color: #cbcbcb;
+        background-color: @navBGHover;
       }
     }
     .copy-url {
@@ -953,7 +952,7 @@ div.add-dropdown {
         background-color: #202326;
         color: rgba(255, 255, 255, 0.8);
         &:hover{
-          background-color: @red;
+          background-color: @navBG;
           color: white;
         }
       }
