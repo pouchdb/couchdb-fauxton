@@ -10,14 +10,14 @@
     "async": "~0.2.6",
     "grunt": "~0.4.1",
     "grunt-cli": "~0.1.6",
-    "couchapp": "~0.9.1",
+    "couchapp": "~0.11.0",
     "grunt-contrib-cssmin": "~0.5.0",
     "grunt-contrib-clean": "~0.4.1",
     "grunt-contrib-jshint": "~0.6.0",
     "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-less": "~0.5.0",
+    "grunt-contrib-less": "~0.11.0",
     "grunt-contrib-jst": "~0.5.0",
-    "grunt-contrib-watch": "~0.4.4",
+    "grunt-contrib-watch": "~0.6.1",
     "grunt-contrib-uglify": "~0.2.0",
     "grunt-contrib-copy": "~0.4.1",
     "grunt-couchapp": "~0.1.0",
@@ -27,12 +27,14 @@
     "underscore": "~1.4.2",
     "url": "~0.7.9",
     "urls": "~0.0.3",
-    "http-proxy": "~0.10.2",
+    "http-proxy": "~1.1.4",
     "send": "~0.1.1",
     "grunt-mocha-phantomjs": "~0.3.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt test",
+    "couchdebug": "grunt couchdebug",
+    "couchdb": "grunt couchdb"
   },
   "repository": {
     "type": "git",

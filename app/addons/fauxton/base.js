@@ -13,10 +13,12 @@
 define([
   "app",
   "api",
-  "addons/fauxton/resizeColumns"
+  "addons/fauxton/resizeColumns",
+  "addons/fauxton/components",
+  "plugins/zeroclipboard/ZeroClipboard"
 ],
 
-function(app, FauxtonAPI, resizeColumns) {
+function(app, FauxtonAPI, resizeColumns, Components, ZeroClipboard) {
 
   var Fauxton = FauxtonAPI.addon();
   FauxtonAPI.addNotification = function (options) {
@@ -47,9 +49,8 @@ function(app, FauxtonAPI, resizeColumns) {
   });
 
   Fauxton.initialize = function () {
-    // app.footer = new Fauxton.Footer({el: "#footer-content"}),
     app.navBar = new Fauxton.NavBar();
-    app.apiBar = new Fauxton.ApiBar();
+    app.apiBar = new Components.ApiBar();
 
     FauxtonAPI.when.apply(null, app.navBar.establish()).done(function() {
       FauxtonAPI.masterLayout.setView("#primary-navbar", app.navBar, true);
@@ -75,7 +76,7 @@ function(app, FauxtonAPI, resizeColumns) {
       var crumbs = routeObject.get('crumbs');
 
       if (crumbs.length) {
-        FauxtonAPI.masterLayout.setView('#breadcrumbs', new Fauxton.Breadcrumbs({
+        FauxtonAPI.masterLayout.setView('#breadcrumbs', new Components.Breadcrumbs({
           crumbs: crumbs
         }), true).render();
       }
@@ -90,21 +91,6 @@ function(app, FauxtonAPI, resizeColumns) {
       }
     });
   };
-
-  Fauxton.Breadcrumbs = FauxtonAPI.View.extend({
-    template: "addons/fauxton/templates/breadcrumbs",
-
-    serialize: function() {
-      var crumbs = _.clone(this.crumbs);
-      return {
-        crumbs: crumbs
-      };
-    },
-
-    initialize: function(options) {
-      this.crumbs = options.crumbs;
-    }
-  });
 
   Fauxton.VersionInfo = Backbone.Model.extend({
     url: function () {
@@ -217,25 +203,10 @@ function(app, FauxtonAPI, resizeColumns) {
 
     afterRender: function(){
       $('#primary-navbar li[data-nav-name="' + app.selectedHeader + '"]').addClass('active');
-
-      var $selectorList = $('body');
-      var that = this;
-      $('#primary-navbar').on("click", ".nav a", function(){
-        if (!($selectorList.hasClass('closeMenu'))){
-          setTimeout(
-            function(){
-            $selectorList.addClass('closeMenu');
-            that.resizeColumns.onResizeHandler();
-          },3000);
-
-        }
-      });
-
-      this.resizeColumns.initialize();
     },
 
     beforeRender: function () {
-      this.insertView(".version", this.versionFooter);
+      this.insertView(".js-version", this.versionFooter);
       this.addLinkViews();
     },
 
@@ -255,50 +226,6 @@ function(app, FauxtonAPI, resizeColumns) {
     }
 
     // TODO: ADD ACTIVE CLASS
-  });
-
-  Fauxton.ApiBar = FauxtonAPI.View.extend({
-    template: "addons/fauxton/templates/api_bar",
-    endpoint: '_all_docs',
-
-    documentation: 'docs',
-
-    events:  {
-      "click .api-url-btn" : "toggleAPIbar"
-    },
-
-    toggleAPIbar: function(e){
-      var $currentTarget = $(e.currentTarget).find('span');
-      if ($currentTarget.hasClass("fonticon-plus")){
-        $currentTarget.removeClass("fonticon-plus").addClass("fonticon-minus");
-      }else{
-        $currentTarget.removeClass("fonticon-minus").addClass("fonticon-plus");
-      }
-
-      $('.api-navbar').toggle();
-
-    },
-
-    serialize: function() {
-      return {
-        endpoint: this.endpoint,
-        documentation: this.documentation
-      };
-    },
-
-    hide: function(){
-      this.$el.addClass('hide');
-    },
-    show: function(){
-      this.$el.removeClass('hide');
-    },
-    update: function(endpoint) {
-      this.show();
-      this.endpoint = endpoint[0];
-      this.documentation = endpoint[1];
-      this.render();
-    }
-
   });
 
   Fauxton.Notification = FauxtonAPI.View.extend({

@@ -21,6 +21,7 @@
 @import "bootstrap/bootstrap.less";
 @import "bootstrap/mixins.less";
 @import "prettyprint.less";
+@import "pagination.less";
 @import "icons.less";
 
 /**
@@ -53,7 +54,7 @@ a:active {
 }
 
 a:hover {
-  color: @red;
+  color: @linkColorHover;
 }
 
 input[type=text],
@@ -103,8 +104,8 @@ select {
     border-right: none;
     &:hover,
     &:focus {
-      background-color: @linkRed;
-      border-top: 1px solid @red;
+      background-color: @navBG;
+      border-top: 1px solid @navBGHover;
       color: white;
     }
   }
@@ -152,7 +153,7 @@ table tr td{
   }
 }
 thead {
-  border-bottom: 2px solid @redButton;
+  border-bottom: 2px solid @navBG;
 }
 tbody {
   padding-top: 10px;
@@ -205,7 +206,7 @@ tbody {
   }
 }
 .btn-primary {
-  background: @redButton;
+  background: @navBG;
 }
 
 .btn-primary a:visited {
@@ -302,12 +303,6 @@ table.databases {
   background: url('../img/loader.gif') center center no-repeat;
   min-height:  100px;
 }
-#app-container.loader{
-  min-height: 400px;
-  > *{
-    display: none;
-  }
-}
 
 #global-notifications {
   position: fixed;
@@ -321,6 +316,7 @@ table.databases {
   width: 100%;
 }
 
+/*container where the layout is injected*/
 #app-container{
   padding: 0;
   height: 100%;
@@ -331,6 +327,24 @@ table.databases {
   > .row-fluid {
     height: 100%;
   }
+  &.loader{
+    min-height: 400px;
+    > *{
+      display: none;
+    }
+  }
+}
+
+@media screen and ( max-height: 600px ){
+ #primary-navbar{
+     overflow-y: scroll;
+ }
+}
+
+@media screen and ( min-height: 600px ){
+ #primary-navbar{
+     overflow-y: hidden;
+ }
 }
 
 /* Fixed side navigation */
@@ -341,11 +355,15 @@ table.databases {
   top: 0;
   bottom: 0;
   background-color: @primaryNav;
-  overflow-y: scroll;
-  .version {
+  .js-version {
     color: #fff;
     font-size: 10px;
     padding-left: 10px;
+  }
+  .closeMenu & {
+    .js-version {
+      display: none;
+    }
   }
   #footer-links{
     position: absolute;
@@ -357,11 +375,13 @@ table.databases {
   }
   .navbar {
      .burger{
+        cursor: pointer;
         .transition(all @transitionSpeed @transitionEaseType);
         padding: 22px 0 0 18px;
         position: fixed;
-        top: 0;
         z-index: 100;
+        width: 64px;
+        top: 0;
         background-color: @primaryNav;
         width: @navWidth;
         div{
@@ -373,15 +393,15 @@ table.databases {
           margin: 2px 0px;
         }
         &:hover div{
-          background-color: @orange;
+          background-color: @navBGHover;
         }
       }
       .bottom-container {
-	     height: 110px;
-	     position: fixed;
-	     bottom: 0;
-	     width: 220px;
-	     background: #3a2c2b;
+       height: 110px;
+       position: fixed;
+       bottom: 0;
+       width: 220px;
+       background: @primaryNav;
        .brand {
          .box-sizing(content-box);
          .hide-text;
@@ -391,7 +411,7 @@ table.databases {
          height: 40px;
          padding: 10px;
          float: none;
-         background: #3a2c2b;
+         background: @primaryNav;
          .icon {
            .box-sizing(content-box);
            background: url(../img/pouchdb-site.png) no-repeat 0 0;
@@ -407,19 +427,19 @@ table.databases {
           }
        }
        #footer-nav-links {
-	     li {
-		   a {
-		     font-size: 12px;
-		     color: @red;
-		     padding: 12px;
-		     text-shadow: none;
-		   }
-		   &.active, &:hover{
+       li {
+       a {
+         font-size: 12px;
+         color: @linkColor;
+         padding: 12px;
+         text-shadow: none;
+       }
+       &.active, &:hover{
              a {
                text-decoration: underline;
              }
            }
-		 }
+     }
        }
     }
     nav {
@@ -441,9 +461,9 @@ table.databases {
           min-height: 48px;
           &.active, &:hover{
             a{
-              .box-shadow(none);
+                text-shadow: 0 1px rgba(0, 0, 0, 0.2);
             }
-            background-color: @red;
+            background-color: @navBGHover;
           }
           &:hover .fonticon:before{
             color: @white;
@@ -482,20 +502,20 @@ table.databases {
       ul#footer-nav-links{
         li{
           background-color: @primaryNav;
-          border-top: 1px solid @red;
+          border-top: 1px solid @linkColorHover;
           border-bottom: none;
           font-size: 12px;
           padding: 12px;
           min-height: 44px;
           &.active, &:hover{
-            background-color: @linkRed;
-            border-top: 1px solid @red;
+            background-color: @linkColor;
+            border-top: 1px solid @linkColorHover;
             a{
               color: white;
             }
           }
           a{
-            color: @red;
+            color: @linkColor;
           }
         }
 
@@ -506,9 +526,7 @@ table.databases {
         li{
           min-height: 55px;
           background-color: @bottomNav;
-          &.active{
-            background-color:@linkRed;
-          }
+          &.active,
           &:hover{
             background-color: @navBGHover;
           }
@@ -529,10 +547,19 @@ table.databases {
 }
 
 
+
+/*
+
+  FIXED HEADER, DASHBOARD & BREADCRUMBS:
+
+  one_pane.html
+  two_pane.html
+  with_sidebar.html
+  with_tabs.html
+  with_tabs_sidebar.html
+*/
 #dashboard {
-  max-width: 1500px;
-  .box-shadow(-6px 0 rgba(0, 0, 0, 0.1));
-  border-left: 1px solid #999;
+  .left-shadow-border;
   position: absolute;
   left: @navWidth;
   margin-left: 0;
@@ -547,38 +574,14 @@ table.databases {
   &.one-pane{
     min-width: 800px;
     margin-top: 0;
-    overflow: auto;
-  }
-}
-
-/*dashboard content can be in multiple templates*/
-
-#dashboard-content{
-  &.row-fluid,
-  &.window-resizeable{
-    /*remove gutter without rewriting variable*/
-    margin-left: 0px;
-  }
-  padding: 20px;
-  .with-sidebar &{
-    border-left: 1px solid #999;
-    border-right: 1px solid #999;
-    width: auto;
-    .box-shadow(-6px 0 rgba(0, 0, 0, 0.1));
-    padding: 0px;
-    bottom: 0px;
-    top: 60px;
-    position: absolute;
     overflow-x: hidden;
-    overflow-y: auto;
-    left: @sidebarWidth;
-    right: 0;
-    .box-sizing(border-box);
   }
-  > div.inner {
-    display: block;
+  &.two-pane{
+    margin-top: 0;
+    overflow-x: hidden;
   }
 }
+
 
 .with-sidebar.content-area {
   position: absolute;
@@ -587,11 +590,6 @@ table.databases {
   left: 0;
   right: 0;
 }
-
-// .closeMenu .with-sidebar.content-area {
-//   left: 0;
-// }
-/*tools*/
 
 .row-fluid.content-area{
   background-color: @background;
@@ -607,7 +605,7 @@ table.databases {
   .closeMenu & {
     left: @collapsedNavWidth;
   }
-  border-bottom: 5px solid @breadcrumbBorder;
+  //border-bottom: 5px solid @breadcrumbBorder;
   .box-shadow(0 4px 6px -2px #808080);
   z-index: 100;
   .one-pane & {
@@ -618,47 +616,24 @@ table.databases {
   }
 }
 
-#breadcrumbs {
-   padding: 15px 20px;
-   .breadcrumb {
-    margin-bottom: 0;
-    background-color: transparent;
-    padding: 0;
-    li {
-      .divider {
-        font-size: 12px;
-        color: @breadcrumbArrow;
-      }
-      &:first-child {
-        font-size: 30px;
-      }
-      color: @breadcrumbText;
-      font-size: 18px;
-      text-shadow: none;
-      &.active{
-        color: #333;
-      }
-      a{
-        color: @breadcrumbText;
-      }
-    }
-   }
-}
-
-
 /*SIDEBAR TEMPLATE STYLES*/
 .topmenu-defaults {
   height: 70px;
   padding: 12px 10px 0;
-  border-bottom: 1px solid @darkRed;
   .box-sizing(border-box);
 }
 
-#dashboard-upper-menu{
+.dashboard-upper-menu{
+  right: 0;
+  left: @sidebarWidth+@navWidth;
   position: fixed;
   z-index: 11;
+  display: block;
   .topmenu-defaults;
   background-color: #CBCBCB;
+  .closeMenu & {
+    left: @sidebarWidth+@collapsedNavWidth;
+  }
 }
 
 #dashboard-lower-content{
@@ -677,54 +652,61 @@ table.databases {
   }
 }
 
-#sidenav{
+.sidenav {
   padding: 0;
   header {
     width: @sidebarWidth;
-    .box-shadow(inset -7px 0 15px -6px #000);
-    background: transparent url('../img/linen.png') repeat 0 0;
-    .topmenu-defaults;
+    border-bottom: 1px solid #d3d7db;
   }
-  nav {
-    .nav-list{
+  .nav-list{
+    .divider {
+      border: none;
+    }
+    > li > a:hover,
+    > li > a:focus{
+      background-color: @navBG;
+      color: #fff;
+    }
+    li.active > a {
+      color: @navBGHover;
+    }
+    > li > a{
+      color: @linkColor;
+      padding: 10px 13px 10px 24px;
+      border-bottom: 1px solid #d3d7db;
+      span{
+        margin-right: 8px;
+        width: 14px;
+        display: inline-block;
+        text-align: center;
+      }
+    }
+    a{
+      display: block;
+      padding: 10px 5px 5px 15px;
+      color: @subListGray;
       .divider {
-        border: none;
+        background: none;
+        color: #ccc;
+        padding: 0 2px;
       }
-      li.active a {
-        background-color: @darkRed;
-        color: #fff;
+    }
+    .nav-header{
+      padding: 0px;
+      text-shadow: none;
+      color: #333333;
+      & > span:hover {
+        color: @linkColor;
       }
-      a{
-        display: block;
-        padding: 10px 5px 10px 15px;
-        color: #333333;
-        border-bottom: 1px solid #989898;
-        .divider {
-          background: none;
-          color: #ccc;
-          padding: 0 2px;
-        }
-      }
-      .nav-header{
-        background-color: #B2B2B2;
-        padding: 5px;
-        text-shadow: none;
-        color: #333333;
-        border-bottom: 1px solid #989898;
-      }
-
     }
   }
 }
+
 #sidebar-content {
-.box-shadow(-7px 0 15px -6px #000);
   position: absolute;
-  bottom: 0px;
   top: 60px;
   width: @sidebarWidth;
   left: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
   background-color: @secondarySidebar;
   > div.inner {
     display: block;
@@ -747,7 +729,7 @@ table.databases {
 #db-views-tabs-nav{
   position: fixed;
   z-index: 12;
-  margin-top: 31px;
+  margin-top: 19px;
   margin-bottom: 0;
   /*background-color: #f4f4f4;*/
   padding: 0 20px;
@@ -815,7 +797,7 @@ table.databases {
     content: "\00d7";
     text-shadow: 1px 1px 1px rgba(0, 0, 0, .2);
     font-size: 16px;
-    background-color: @red;
+    background-color: @linkColorHover;
     color: white;
     text-align: center;
     line-height: 15px;
@@ -871,45 +853,488 @@ div.spinner {
 }
 
 #api-navbar{
-  position: relative;
+  > div{
+    > .api-url-btn {
+      padding:10px;
+    }
+  }
 }
 
 .api-url-btn {
-  position: absolute;
-  right: 15px;
-  top: -50px;
   .icon {
     font-size: 11px;
   }
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
 }
-
+.api-url-btn:hover {
+  background: none;
+}
 .api-navbar {
-  border-top: 1px solid @red;
-  padding: 20px 20px 15px;
+  padding: 5px 20px;
   .input-append.input-prepend {
     margin-bottom: 0px;
-    .add-on {
-      background: none;
-      padding: 14px 12px 32px 12px;
-      border: none;
+    .copying {
+      background-color: #999;
+      transition: background-color 5ms linear;
     }
-    .btn:last-child{
+    .input-xxlarge {
+      .border-radius(5px 0 0 5px);
+      border: none;
+      padding: 9px;
+      -moz-transition: background-color 100ms linear;
+      -webkit-transition: background-color 100ms linear;
+      transition: background-color 100ms linear;
+    }
+    .btn{
+      background-color: @navBG;
+      color: #fff;
       margin-left: -1px;
-      background: none;
-      padding: 13px 12px 11px 12px;
+      padding: 10px 10px 8px;
+      border: none;
+      line-height: 1.5em;
+      .border-radius(5px);
       &:hover{
-        background-color: @red;
-        color: white;
+        background-color: @navBGHover;
       }
+    }
+    .copy-url {
+      .border-radius(0 5px 5px 0);
+    }
+    .copying {
+      background-color: #999;
+    }
+    .zeroclipboard-is-hover {
+      background-color: #cbcbcb;
+    }
+    .icon {
+      vertical-align: bottom;
+      font-size: 17.5px;
     }
   }
 }
 
-.js-log-filter-form {
+.js-filter-form {
+  .help-block {
+    padding: 5px 0 5px 0;
+  }
+  .icon {
+    font-size: 16px;
+  }
+}
+
+.js-filter {
   ul {
     margin-left: 0px;
   }
   li {
     list-style-type: none;
+  }
+}
+
+div.add-dropdown {
+  position: absolute;
+  top: 2px;
+  right: 0px;
+  .dropdown-menu{
+    left: -110px;
+    padding-bottom: 0;
+    width: 148px;
+    min-width: 0;
+    top: 38px;
+    .box-shadow(@boxShadow);
+      &.arrow:before{
+        right: 4px;
+      }
+      a {
+        background-color: #202326;
+        color: rgba(255, 255, 255, 0.8);
+        &:hover{
+          background-color: @navBG;
+          color: white;
+        }
+      }
+    li a {
+      padding: 10px 15px 10px 12px;
+    }
+  }
+  .dropdown-toggle{
+    border-top: none !important;
+    text-decoration: none;
+  }
+  > a {
+    border-bottom: none;
+    text-decoration: none;
+    font-size: 16px;
+  }
+}
+
+
+//----templates//
+
+/*
+---------------------------------------------------
+  REUSEABLE SHADOW BORDER
+---------------------------------------------------
+*/
+
+.left-shadow-border{
+  border-left: 1px solid #999;
+  .box-shadow(-6px 0 rgba(0, 0, 0, 0.1));
+}
+
+.bottom-shadow-border{
+  border-bottom: 1px solid #999;
+  .box-shadow(0px 6px 0 0 rgba(0, 0, 0, 0.1));
+}
+
+
+#right-content,
+#dashboard-lower-content{
+  .view {
+    //background-color:#A8A1A1;
+  }
+}
+
+#dashboard-content{
+  padding-left: 15px;
+  padding-top: 20px;
+
+  &.row-fluid,
+  &.window-resizeable{
+    /*remove gutter without rewriting variable*/
+    margin-left: 0px;
+  }
+  .one-pane &{
+    //margin-top:60px;
+    padding-bottom:25px;
+  }
+  .with-sidebar &{
+    .left-shadow-border;
+    border-right: 1px solid #999;
+    width: auto;
+    padding: 0px;
+    bottom: 0px;
+    top: 60px;
+    position: fixed;
+    overflow-x: hidden;
+    overflow-y: auto;
+    left: @sidebarWidth+@navWidth;
+    right: 0;
+    .box-sizing(border-box);
+    .closeMenu & {
+      left: @sidebarWidth+@collapsedNavWidth;
+    }
+  }
+  > div.inner {
+    display: block;
+  }
+}
+
+#global-notifications{
+  .with-sidebar & {
+    left: @sidebarWidth+@navWidth;
+    .closeMenu & {
+      left: @sidebarWidth+@collapsedNavWidth;
+    }
+  }
+}
+
+#right-content{
+  .two-pane &{
+    .view {
+      padding: 0 20px 40px;
+    }
+    border-left: 1px solid #999;
+    .box-shadow(-6px 0 rgba(0, 0, 0, 0.1));
+  }
+}
+
+//---header--//
+.left-shadow-border{
+  border-left: 1px solid #999;
+  .box-shadow(-6px 0 rgba(0, 0, 0, 0.1));
+}
+
+.bottom-shadow-border{
+  border-bottom: 1px solid #999;
+  .box-shadow(0px 6px 0 0 rgba(0, 0, 0, 0.1));
+}
+
+.fixed-header{
+  height: 60px;
+  background-color: @breadcrumbBG;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: @navWidth;
+  .closeMenu & {
+    left: @collapsedNavWidth;
+  }
+  z-index: 100;
+  .two-pane & {
+    border: none;
+  }
+  .two-pane &,
+  .with-sidebar & {
+    #api-navbar{
+      > div {
+        .bottom-shadow-border;
+        height: 60px;
+      }
+      .left-shadow-border;
+    }
+    #breadcrumbs{
+      .bottom-shadow-border;
+    }
+  }
+  .one-pane & {
+    .bottom-shadow-border;
+    left: auto;
+  }
+  /* these styles are for the new header*/
+  > div {
+    display:inline-block;
+    vertical-align: top;
+  }
+}
+
+#api-navbar{
+  height: 60px;
+  position: absolute;
+  /* these styles are for the new header*/
+  .right-header{
+  }
+}
+
+/* only specify the sidebar width when there’s a sidebar */
+.with-sidebar #breadcrumbs {
+  width: @sidebarWidth;
+}
+
+#breadcrumbs {
+  height: 60px;
+
+  /* these styles are for the new header*/
+  .header-left{
+    > div{
+      display:inline-block;
+    }
+    .breadcrumb {
+      li:first-child{
+        border-right: 1px solid #ccc;
+      }
+    }
+  }
+  .breadcrumb {
+    margin-bottom: 0;
+    background-color: transparent;
+    padding: 0;
+    li {
+      padding:15px 10px;
+      height: 60px;
+      vertical-align: top;
+      &:first-child {
+        font-size: 24px;
+        .with-sidebar &,
+        .two-pane & {
+          padding:20px 10px;
+          font-size: 19px;
+        }
+      }
+      color: @breadcrumbText;
+      font-size: 18px;
+      text-shadow: none;
+      &.active{
+        color: #333;
+      }
+      a{
+        text-decoration: none;
+        color: @breadcrumbText;
+      }
+    }
+  }
+}
+
+.header-left{
+  position: relative;
+  #header-dropdown-menu {
+    position: absolute;
+    right: 5px;
+    top: 0;
+    .dropdown-toggle {
+      color: #666666;
+    }
+    a {
+      padding: 10px;
+      text-decoration: none;
+    }
+    .dropdown {
+      border-left: 1px solid #ccc;
+      padding: 20px 0px;
+    }
+    .dropdown-menu {
+      left: -115px;
+      top: 48px;
+    }
+  }
+}
+
+.tray {
+  display: none;
+  .border-radius(5px);
+  position: absolute;
+  right: 5px;
+  top: 55px;
+  z-index: 11;
+  background-color: #333;
+  color: #fff;
+  margin: 0;
+   .add-on {
+    font-size: 16px;
+    background: none;
+    padding: 0px;
+    margin: 10px 0;
+    border: none;
+    display: block;
+    text-align: left;
+    color: #fff;
+    text-shadow: none;
+    height: auto;
+    line-height: 1em;
+  }
+}
+.tray:before {
+  content: '';
+  position: absolute;
+  top: -25px;
+  border-color: transparent transparent #333 transparent;
+  border-style: solid;
+  border-width: 15px;
+  width: 0;
+  height: 0;
+}
+
+.fixed-header,
+.header-right {
+  > .btn {
+    padding: 0;
+    margin: 0;
+  }
+  > .button,
+  > .button a,
+  .api-url-btn > button,
+  .btn-primary {
+    color: #666;
+    font-size: 13px;
+    line-height: 3em;
+  }
+}
+
+.header-right {
+  .well {
+    padding: 0;
+    margin: 0;
+  }
+  .searchbox-container {
+    position: relative;
+    right: inherit;
+    input[type="text"] {
+      .border-radius(5px);
+      font-size: 13px;
+      padding: 8px 35px 8px 10px;
+      width: 275px;
+    }
+    .btn-primary {
+      background: none repeat scroll 0% 0% transparent;
+      border: none;
+      position: absolute;
+      right: 12px;
+      top: 0px;
+      height:60px;
+      z-index: 2;
+      color: #999;
+      .icon-search{
+        position: absolute;
+        top: 22px;
+        right: 15px;
+      }
+    }
+  }
+  > div {
+    float: right;
+    height: 60px;
+    border-left: 1px solid #ccc;
+    margin: 0;
+    padding: 10px 15px;
+    line-height: 40px;
+  }
+  > div:last-child {
+    border-left: none;
+  }
+}
+.api-navbar:before {
+  right: 25px;
+}
+
+#jump-to-doc{
+  .btn-primary {
+    .icon-search{
+      position: absolute;
+      top: 18px;
+      right: 15px;
+    }
+  }
+}
+
+
+
+//----footer--///
+footer.pagination-footer {
+  z-index: 1;
+  min-width: 600px;
+  position:fixed;
+  background-color:#fff;
+  bottom:0;
+  height: 50px;
+  border-top:1px solid #ccc;
+  margin-left: -15px;
+  .pagination{
+    .box-shadow(none);
+    position: absolute;
+    right:0;
+    top: 0;
+    margin:0px;
+    height: 50px;
+    border-left: 1px solid #ccc;
+    li {
+      display: inline-block;
+      a {
+        padding: 15px 10px 15px 15px;
+        border: none;
+      }
+    }
+  }
+}
+
+footer.index-pagination {
+  margin-left: -20px;
+}
+
+#item-numbers{
+  p {
+    margin: 20px;
+    font-size: 14px;
+  }
+}
+
+div#per-page {
+  position: absolute;
+  right: 86px;
+  top: 2px;
+  #select-per-page {
+    margin-top: 10px;
   }
 }

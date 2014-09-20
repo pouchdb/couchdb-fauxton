@@ -25,13 +25,165 @@ define([
   // Libs
   "api",
   "ace_configuration",
-  "spin"
+  "spin",
+  // this should never be global available:
+  // https://github.com/zeroclipboard/zeroclipboard/blob/master/docs/security.md
+  "plugins/zeroclipboard/ZeroClipboard",
+  "velocity.ui"
 ],
 
-function(app, FauxtonAPI, ace, spin) {
+function(app, FauxtonAPI, ace, spin, ZeroClipboard) {
   var Components = FauxtonAPI.addon();
 
+  //setting up the left header with the backbutton used in Views and All docs
+  Components.LeftHeader = FauxtonAPI.View.extend({
+    className: "header-left",
+    template: "addons/fauxton/templates/header_left",
+    initialize:function(options){
+      this.dropdownEvents = options.dropdownEvents;
+      this.dropdownMenuLinks = options.dropdownMenu;
+      this.crumbs = options.crumbs || [];
+    },
+    updateCrumbs: function(crumbs){
+      this.crumbs = crumbs;
+      this.breadcrumbs && this.breadcrumbs.update(crumbs);
+    },
+    updateDropdown: function(menuLinks){
+      this.dropdownMenuLinks = menuLinks;
+      this.dropdown && this.dropdown.update(menuLinks);
+    },
+    beforeRender: function(){
+      this.setUpCrumbs();
+      this.setUpDropDownMenu();
+    },
+    setUpCrumbs: function(){
+      this.breadcrumbs = this.insertView("#header-breadcrumbs", new Components.Breadcrumbs({
+        crumbs: this.crumbs
+      }));
+    },
+    setUpDropDownMenu: function(){
+      if (this.dropdownMenuLinks){
+        this.dropdown = this.insertView("#header-dropdown-menu", new Components.MenuDropDown({
+          icon: 'fonticon-cog',
+          links: this.dropdownMenuLinks,
+          events: this.dropdownEvents
+        }));
+      }
+    }
+  });
+
+  Components.Breadcrumbs = FauxtonAPI.View.extend({
+    className: "breadcrumb pull-left",
+    tagName: "ul",
+    template: "addons/fauxton/templates/breadcrumbs",
+    serialize: function() {
+      var crumbs = _.clone(this.crumbs);
+      return {
+        crumbs: crumbs
+      };
+    },
+    update: function(crumbs) {
+      this.crumbs = crumbs;
+      this.render();
+    },
+    initialize: function(options) {
+      this.crumbs = options.crumbs;
+    }
+  });
+
+  Components.ApiBar = FauxtonAPI.View.extend({
+    template: "addons/fauxton/templates/api_bar",
+
+    events:  {
+      "click .api-url-btn" : "showAPIbar"
+    },
+
+    initialize: function (options) {
+      var _options = options || {};
+      this.endpoint = _options.endpoint || '_all_docs';
+      this.documentation = _options.documentation || 'docs';
+
+      var hideAPIbar = _.bind(this.hideAPIbar, this),
+          navbarVisible = _.bind(this.navbarVisible, this);
+
+      $('body').on('click.apibar',function(e) {
+        var $navbar = $(e.target);
+        if (!navbarVisible()) { return;}
+        if ($navbar.hasClass('.api-url-btn')) { return;}
+
+        if (!$navbar.closest('.api-navbar').length){
+          hideAPIbar();
+        }
+      });
+    },
+
+    navbarVisible: function () {
+      return this.$('.api-navbar').is(':visible');
+    },
+
+    cleanup: function () {
+      // a bit of a hack. The api bar is created twice so we cannot stop listening
+      // to this event until we refactor the api bars into one
+      //$('body').off('click.apibar');
+    },
+
+    hideAPIbar: function () {
+      var $navBar = this.$('.api-navbar');
+      $navBar.velocity("reverse", 250, function () {
+        $navBar.hide();
+      });
+    },
+
+    //we only need to show the api-bar here. The `click.apibar` event
+    //in the initialize will close the api bar if a user clicks the api button
+    //and the api bar is visible.
+    showAPIbar: function(event){
+      if (!this.navbarVisible()) {
+        this.$('.api-navbar').velocity("transition.slideDownIn", 250);
+      }
+    },
+
+    serialize: function() {
+      return {
+        endpoint: this.endpoint,
+        documentation: this.documentation
+      };
+    },
+
+    hide: function(){
+      this.$el.addClass('hide');
+    },
+    show: function(){
+      this.$el.removeClass('hide');
+    },
+    update: function(endpoint) {
+      this.endpoint = endpoint[0];
+      this.documentation = endpoint[1];
+      this.render();
+    },
+    afterRender: function(){
+      var client = new Components.Clipboard({
+        $el: this.$('.copy-url')
+      });
+
+      client.on("load", function(e){
+        var $apiInput = $('#api-navbar input');
+        var copyURLTimer;
+        client.on("mouseup", function(e){
+          $apiInput.css("background-color","#aaa");
+          window.clearTimeout(copyURLTimer);
+          copyURLTimer = setInterval(function () {
+            $apiInput.css("background-color","#fff");
+          }, 200);
+        });
+      });
+    }
+  });
+
+
   Components.Pagination = FauxtonAPI.View.extend({
+    tagName: "ul",
+    className: "pagination pagination-centered",
     template: "addons/fauxton/templates/pagination",
 
     initialize: function(options) {
@@ -40,6 +192,10 @@ function(app, FauxtonAPI, ace, spin) {
       this.total = options.total;
       this.totalPages = Math.ceil(this.total / this.perPage);
       this.urlFun = options.urlFun;
+    },
+
+    afterRender: function () {
+      app.resizeColumns.onResizeHandler();
     },
 
     serialize: function() {
@@ -53,7 +209,10 @@ function(app, FauxtonAPI, ace, spin) {
     }
   });
 
+
   Components.IndexPagination = FauxtonAPI.View.extend({
+    className: "pagination pagination-centered",
+    tagName: 'ul',
     template: "addons/fauxton/templates/index_pagination",
     events: {
       "click a": 'scrollTo',
@@ -96,6 +255,10 @@ function(app, FauxtonAPI, ace, spin) {
       }
 
       return this.collection.hasNext();
+    },
+
+    afterRender: function () {
+      app.resizeColumns.onResizeHandler();
     },
 
     previousClicked: function (event) {
@@ -339,19 +502,43 @@ function(app, FauxtonAPI, ace, spin) {
     }
   });
 
+  Components.FilteredView = FauxtonAPI.View.extend({
+    filters: [],
+    createFilteredData: function (json) {
+      var that = this;
+      return _.reduce(this.filters, function (elements, filter) {
+        return _.filter(elements, function (element) {
+          var match = false;
+          _.each(element, function (value) {
+            if (new RegExp(filter, 'i').test(value.toString())) {
+              match = true;
+            }
+          });
+          return match;
+        });
+      }, json, this);
+    }
+  });
+
   Components.FilterView = FauxtonAPI.View.extend({
     template: "addons/fauxton/templates/filter",
 
     initialize: function (options) {
-      this.eventListener = options.eventListener;
       this.eventNamespace = options.eventNamespace;
+      this.tooltipText = options.tooltipText;
     },
 
     events: {
-      "submit .js-log-filter-form": "filterLogs"
+      "submit .js-filter-form": "filterItems"
     },
 
-    filterLogs: function (event) {
+    serialize: function () {
+      return {
+        tooltipText: this.tooltipText
+      };
+    },
+
+    filterItems: function (event) {
       event.preventDefault();
       var $filter = this.$('input[name="filter"]'),
           filter = $.trim($filter.val());
@@ -360,17 +547,21 @@ function(app, FauxtonAPI, ace, spin) {
         return;
       }
 
-      this.eventListener.trigger(this.eventNamespace + ":filter", filter);
+      FauxtonAPI.triggerRouteEvent(this.eventNamespace + "FilterAdd", filter);
 
       this.insertView(".filter-list", new Components.FilterItemView({
         filter: filter,
-        eventListener: this.eventListener,
         eventNamespace: this.eventNamespace
       })).render();
 
       $filter.val('');
-    }
+    },
 
+    afterRender: function () {
+      if (this.tooltipText) {
+        this.$el.find(".js-filter-tooltip").tooltip();
+      }
+    }
   });
 
   Components.FilterItemView = FauxtonAPI.View.extend({
@@ -379,7 +570,6 @@ function(app, FauxtonAPI, ace, spin) {
 
     initialize: function (options) {
       this.filter = options.filter;
-      this.eventListener = options.eventListener;
       this.eventNamespace = options.eventNamespace;
     },
 
@@ -396,7 +586,7 @@ function(app, FauxtonAPI, ace, spin) {
     removeFilter: function (event) {
       event.preventDefault();
 
-      this.eventListener.trigger(this.eventNamespace + ":remove", this.filter);
+      FauxtonAPI.triggerRouteEvent(this.eventNamespace + "FilterRemove", this.filter);
       this.remove();
     }
 
@@ -420,7 +610,10 @@ function(app, FauxtonAPI, ace, spin) {
 
       this.editor.setTheme("ace/theme/" + this.theme);
 
-      this.editor.getSession().setMode("ace/mode/" + this.mode);
+      if (this.mode != "plain") {
+        this.editor.getSession().setMode("ace/mode/" + this.mode);
+      }
+
       this.editor.setShowPrintMargin(false);
       this.addCommands();
 
@@ -529,9 +722,116 @@ function(app, FauxtonAPI, ace, spin) {
 
     isIgnorableError: function(msg) {
       return _.contains(this.excludedViewErrors, msg);
+    },
+
+    configureFixedHeightEditor: function(numLines) {
+      this.editor.renderer.setVScrollBarAlwaysVisible(true);
+      this.editor.renderer.setHScrollBarAlwaysVisible(true);
+      /* customize the ace scrolling for static edit height */
+      this.editor.renderer.$autosize = function() {
+        this.$size.height = numLines * this.lineHeight;
+        this.desiredHeight = numLines * this.lineHeight;
+        this.container.style.height = this.desiredHeight + "px";
+        this.scrollBarV.setVisible(true);
+        this.scrollBarH.setVisible(true);
+      };
+    },
+
+    replaceCurrentLine: function(replacement) {
+      this.editor.getSelection().selectLine();
+      this.editor.insert(replacement);
+      this.editor.getSelection().moveCursorUp();
+    },
+
+    getLine: function(lineNum) {
+      return this.editor.session.getLine(lineNum);
+    },
+
+    getSelectionStart: function() {
+      return this.editor.getSelectionRange().start;
+    },
+
+    getSelectionEnd: function() {
+      return this.editor.getSelectionRange().end;
+    },
+
+    getRowHeight: function() {
+      return this.editor.renderer.layerConfig.lineHeight;
+    },
+
+    isRowExpanded: function(row) {
+      return !this.editor.getSession().isRowFolded(row);
+    },
+
+    documentToScreenRow: function(row) {
+      return this.editor.getSession().documentToScreenRow(row, 0);
     }
 
   });
+
+
+  //Menu Drop down component. It takes links in this format and renders the Dropdown:
+  // [{
+  //  title: 'Section Title (optional)',
+  //  links: [{
+  //    icon: 'icon-class (optional)',
+  //    url: 'clickalble-url',
+  //    title: 'name of link'
+  //  }]
+  // }]
+  Components.MenuDropDown = FauxtonAPI.View.extend({
+    template: "addons/fauxton/templates/menu_dropdown",
+    className: "dropdown",
+    initialize: function(options){
+      this.links = options.links;
+      this.icon = options.icon || "fonticon-plus-circled";
+      this.setUpEvents();
+    },
+    setUpEvents: function(){
+      this.events = {};
+      _.each(this.links, function (parentLink) {
+        _.each(parentLink.links, function (link) {
+          if (!link.trigger) { return; }
+          this.events['click .' + link.icon] = "triggerEvent";
+        }, this);
+      }, this);
+    },
+    triggerEvent: function(e){
+      e.preventDefault();
+      var eventTrigger = $(e.currentTarget).attr('triggerEvent');
+      FauxtonAPI.Events.trigger(eventTrigger);
+    },
+    update: function(links){
+      this.links = links;
+      this.render();
+    },
+    serialize: function(){
+      return {
+        links: this.links,
+        icon: this.icon
+      };
+    }
+  });
+
+  Components.Clipboard = FauxtonAPI.View.extend({
+    initialize: function (options) {
+      this.$el = options.$el;
+      this.moviePath = FauxtonAPI.getExtensions('zeroclipboard:movielist')[0];
+
+      if (_.isUndefined(this.moviePath)) {
+       this.moviePath = app.host + app.root + "js/zeroclipboard/ZeroClipboard.swf";
+      }
+
+      ZeroClipboard.config({ moviePath: this.moviePath });
+      this.client = new ZeroClipboard(this.$el);
+    },
+
+    on: function () {
+      return this.client.on.apply(this.client, arguments);
+    }
+
+  });
+
 
   //need to make this into a backbone view...
   var routeObjectSpinner;
@@ -611,6 +911,7 @@ function(app, FauxtonAPI, ace, spin) {
     removeViewSpinner(selector);
     removeRouteObjectSpinner();
   });
+
 
   return Components;
 });

@@ -17,61 +17,44 @@ define([
        'api'
 ], function (app, Components, testUtils, FauxtonAPI) {
   var assert = testUtils.assert,
-      ViewSandbox = testUtils.ViewSandbox,
-      myEvents = {};
-
-  _.extend(myEvents, Backbone.Events);
+      ViewSandbox = testUtils.ViewSandbox;
 
   describe('FilterView', function () {
     var viewSandbox,
         filterView;
 
-    beforeEach(function () {
+    if (!FauxtonAPI.router.triggerRouteEvent) {
+      FauxtonAPI.router.triggerRouteEvent = function () {};
+    }
+
+    beforeEach(function (done) {
       filterView = new Components.FilterView({
-        eventListener: myEvents,
         eventNamespace: 'mynamespace'
       });
 
+      Components.FilterItemView.prototype.useRAF = false;
+
       viewSandbox = new ViewSandbox();
-      viewSandbox.renderView(filterView);
+      viewSandbox.renderView(filterView, done);
     });
 
     afterEach(function () {
       viewSandbox.remove();
     });
 
-    it('should trigger an event on add', function () {
-      filterView.$('[name="filter"]').val('i am a lonely filter');
-      myEvents.listenToOnce(myEvents, 'ente:filter', function (msg) {
-        assert.equal('i am a lonely filter', msg);
-      });
-      filterView.$('.js-log-filter-form').submit();
-    });
-
-    it('should trigger an event on remove', function () {
-      myEvents.listenToOnce(myEvents, 'mynamespace:filter', function (msg) {
-        assert.equal('i am a lonely filter', msg);
-      });
-
-      filterView.$('[name="filter"]').val('i am a lonely filter');
-      filterView.$('.js-log-filter-form').submit();
-      filterView.$('.js-remove-filter').click();
-    });
-
     it('should add filter markup', function () {
       filterView.$('[name="filter"]').val('i was a lonely filter');
-      filterView.$('.js-log-filter-form').submit();
-
+      filterView.$('.js-filter-form').submit();
       filterView.$('[name="filter"]').val('i am a filter');
-      filterView.$('.js-log-filter-form').submit();
+      filterView.$('.js-filter-form').submit();
       assert.equal(2, filterView.$('.js-remove-filter').length);
     });
 
     it('should remove filter markup', function () {
       filterView.$('[name="filter"]').val('i was a lonely filter');
-      filterView.$('.js-log-filter-form').submit();
+      filterView.$('.js-filter-form').submit();
       filterView.$('[name="filter"]').val('i am a filter');
-      filterView.$('.js-log-filter-form').submit();
+      filterView.$('.js-filter-form').submit();
 
       filterView.$('.js-remove-filter').click();
 
@@ -80,8 +63,22 @@ define([
 
     it('should not add empty filters', function () {
       filterView.$('[name="filter"]').val('');
-      filterView.$('.js-log-filter-form').submit();
+      filterView.$('.js-filter-form').submit();
       assert.equal(0, filterView.$('.js-remove-filter').length);
+    });
+
+    it('should not add tooltips by default', function () {
+      assert.equal(0, filterView.$('.js-filter-tooltip').length);
+    });
+
+    it('should add tooltips when a text for it is defined', function () {
+      filterView = new Components.FilterView({
+        eventNamespace: 'mynamespace',
+        tooltipText: 'ente ente',
+        useRAF: false
+      });
+      viewSandbox.renderView(filterView);
+      assert.equal(1, filterView.$('.js-filter-tooltip').length);
     });
   });
 });

@@ -64,6 +64,7 @@ module.exports = function(grunt) {
           "dist/debug/css/fauxton.css": "assets/less/fauxton.less"
         }
       },
+      fonts: ["assets/fonts/*.eot", "assets/fonts/*.svg", "assets/fonts/*.ttf", "assets/fonts/*.woff",],
       img: ["assets/img/**"],
       // used in concat:index_css to keep file ordering intact
       // fauxton.css should load first
@@ -85,6 +86,10 @@ module.exports = function(grunt) {
       var imgPath = root + "/assets/img";
       if(fs.existsSync(imgPath)){
         theAssets.img.push(imgPath + "/**");
+      }
+      var fontsPath = root + "/assets/fonts";
+      if(fs.existsSync(fontsPath)){
+        theAssets.fonts.push(fontsPath + "/**");
       }
     });
     return theAssets;
@@ -124,14 +129,7 @@ module.exports = function(grunt) {
       dist: './dist/debug/',
       port: 8000,
       proxy: {
-        target: {
-          host: 'localhost',
-          port: 5984,
-          https: false
-        },
-        // This sets the Host header in the proxy so that you can use external
-        // CouchDB instances and not have the Host set to 'localhost'
-        changeOrigin: true
+        target: "http://localhost:5984/"
       }
     };
 
@@ -324,6 +322,7 @@ module.exports = function(grunt) {
           {src: "dist/release/index.html", dest: "../../share/www/fauxton/index.html"},
           {src: ["**"], dest: "../../share/www/fauxton/js/", cwd:'dist/release/js/',  expand: true},
           {src: ["**"], dest: "../../share/www/fauxton/img/", cwd:'dist/release/img/', expand: true},
+          {src: ["**"], dest: "../../share/www/fauxton/fonts/", cwd:'dist/release/fonts/', expand: true},
           {src: ["**"], dest: "../../share/www/fauxton/css/", cwd:"dist/release/css/", expand: true}
         ]
       },
@@ -333,6 +332,7 @@ module.exports = function(grunt) {
           {src: "dist/debug/index.html", dest: "../../share/www/fauxton/index.html"},
           {src: ["**"], dest: "../../share/www/fauxton/js/", cwd:'dist/debug/js/',  expand: true},
           {src: ["**"], dest: "../../share/www/fauxton/img/", cwd:'dist/debug/img/', expand: true},
+          {src: ["**"], dest: "../../share/www/fauxton/fonts/", cwd:'dist/debug/fonts/', expand: true},
           {src: ["**"], dest: "../../share/www/fauxton/css/", cwd:"dist/debug/css/", expand: true}
         ]
       },
@@ -346,14 +346,22 @@ module.exports = function(grunt) {
         ]
       },
 
+      zeroclip: {
+        files: [
+          {src: "assets/js/plugins/zeroclipboard/ZeroClipboard.swf", dest: "dist/release/js/zeroclipboard/ZeroClipboard.swf"},
+        ]
+      },
+
       dist:{
         files:[
           {src: "dist/debug/index.html", dest: "dist/release/index.html"},
-          {src: assets.img, dest: "dist/release/img/", flatten: true, expand: true}
+          {src: assets.img, dest: "dist/release/img/", flatten: true, expand: true},
+          {src: assets.fonts, dest: "dist/release/fonts/", flatten: true, expand: true}
         ]
       },
       debug:{
         files:[
+          {src: assets.fonts, dest: "dist/debug/fonts/", flatten: true, expand: true},
           {src: assets.img, dest: "dist/debug/img/", flatten: true, expand: true}
         ]
       }
@@ -464,8 +472,8 @@ module.exports = function(grunt) {
 
   grunt.registerTask('watchRun', ['clean:watch', 'dependencies', 'jshint']);
   // build a release
-  grunt.registerTask('release', ['clean' ,'dependencies', "gen_initialize:release", 'jshint', 'build', 'minify', 'copy:dist', 'copy:ace']);
-  grunt.registerTask('couchapp_release', ['clean' ,'dependencies', "gen_initialize:couchapp", 'jshint', 'build', 'minify', 'copy:dist', 'copy:ace']);
+  grunt.registerTask('release', ['clean' ,'dependencies', "gen_initialize:release", 'jshint', 'build', 'minify', 'copy:dist', 'copy:ace', 'copy:zeroclip']);
+  grunt.registerTask('couchapp_release', ['clean' ,'dependencies', "gen_initialize:couchapp", 'jshint', 'build', 'minify', 'copy:dist', 'copy:ace', 'copy:zeroclip']);
 
   /*
    * Install into CouchDB in either debug, release, or couchapp mode

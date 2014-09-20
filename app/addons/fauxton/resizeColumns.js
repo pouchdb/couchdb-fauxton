@@ -12,7 +12,7 @@
 
 
 // This file creates a set of helper functions that will be loaded for all html
-// templates. These functions should be self contained and not rely on any 
+// templates. These functions should be self contained and not rely on any
 // external dependencies as they are loaded prior to the application. We may
 // want to change this later, but for now this should be thought of as a
 // "purely functional" helper system.
@@ -25,67 +25,75 @@ function(FauxtonAPI) {
 
   var Resize = function(options){
     this.options = options;
-    this.options.selectorElements = options.selectorElements || ".window-resizeable";
   };
 
   Resize.prototype = {
-    getPrimaryNavWidth: function(){
-      var primaryNavWidth  = $('body').hasClass('closeMenu')? 64:224;
-      return primaryNavWidth;
-    },
-    getPanelWidth: function(){
-      var sidebarWidth = $('#sidebar-content').length > 0 ? $('#sidebar-content').width(): 0;
-      return (this.getPrimaryNavWidth() + sidebarWidth); 
-    },
+
     initialize: function(){
-     // $(window).off('resize');
-      var that = this;
-      //add throttler :) 
-      this.lazyLayout = _.debounce(that.onResizeHandler, 300).bind(this);
+      //add throttler :)
+      this.lazyLayout = _.debounce(this.onResizeHandler, 300).bind(this);
       FauxtonAPI.utils.addWindowResize(this.lazyLayout,"animation");
       FauxtonAPI.utils.initWindowResize();
       this.onResizeHandler();
     },
-    updateOptions:function(options){
-      this.options = {};
-      this.options = options;
-      this.options.selectorElements = options.selectorElements || ".window-resizeable";
+
+    onResizeHandler: function (){
+      var fullWidth = this.getFullWidth(),
+          halfWidth = this.getHalfWidth(),
+          sidebarWidth = this.getSidebarContentWidth(),
+          left = $('.window-resizeable-half').length > 0? halfWidth : sidebarWidth;
+
+      $('.window-resizeable').innerWidth(sidebarWidth);
+      $('.window-resizeable-half').innerWidth(halfWidth);
+      $('.window-resizeable-full').innerWidth(fullWidth);
+
+      //set left
+      this.setLeftPosition(left);
+      //if there is a callback, run that
+      this.options.callback && this.options.callback();
+      this.trigger('resize');
     },
-    turnOff:function(){
-      FauxtonAPI.utils.removeWindowResize("animation");
-    },
+
     cleanupCallback: function(){
       this.callback = null;
     },
-    onResizeHandler: function (){
-      //if there is an override, do that instead
-      if (this.options.onResizeHandler){
-        this.options.onResizeHandler();
-      } else {
-        var combinedWidth = window.innerWidth - this.getPanelWidth(),
-        smallWidthConstraint = ($('#sidebar-content').length > 0)? 470:800,
-        panelWidth; 
 
-        if( combinedWidth > smallWidthConstraint  && combinedWidth < 1400){
-          panelWidth = window.innerWidth - this.getPanelWidth();
-        } else if (combinedWidth < smallWidthConstraint){
-          panelWidth = smallWidthConstraint;
-        } else if(combinedWidth > 1400){
-          panelWidth = 1400;
-        }
+    getPrimaryNavWidth: function(){
+      var primaryNavWidth  = $('body').hasClass('closeMenu') ? 64 : $('#primary-navbar').outerWidth();
+      //$('body').hasClass('closeMenu') ? 64 : 220;
+      return primaryNavWidth;
+    },
 
-        $(this.options.selectorElements).innerWidth(panelWidth);
-        
-      }
-      //if there is a callback, run that
-      if(this.options.callback) {
-        this.options.callback();
-      }
-      this.trigger('resize');
-    } 
+    getWindowWidth: function(){
+      return window.innerWidth;
+    },
+
+    getFullWidth: function(){
+      return this.getWindowWidth() - this.getPrimaryNavWidth();
+    },
+
+    getSidebarWidth: function(){
+      return $('#breadcrumbs').length > 0 ? $('#breadcrumbs').outerWidth() : 0;
+    },
+
+    getSidebarContentWidth: function(){
+      return this.getFullWidth() - this.getSidebarWidth() -5;
+    },
+
+    getHalfWidth: function(){
+      var fullWidth = this.getFullWidth();
+      return fullWidth/2;
+    },
+
+    setLeftPosition: function(panelWidth){
+      var primary = this.getPrimaryNavWidth();
+      $('.set-left-position').css('left',panelWidth+primary+4);
+    }
   };
 
   _.extend(Resize.prototype, Backbone.Events);
 
   return Resize;
 });
+
+

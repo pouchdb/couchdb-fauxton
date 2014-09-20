@@ -19,6 +19,7 @@ module.exports = function (grunt) {
         http = require("http"),
         httpProxy = require('http-proxy'),
         send = require('send'),
+        urlLib = require('url'),
         options = grunt.config('couchserver'),
         _ = grunt.util._;
 
@@ -30,18 +31,14 @@ module.exports = function (grunt) {
 
     // Proxy options with default localhost
     var proxy_settings = options.proxy || {
-      target: {
-        host: 'localhost',
-        port: 5984,
-        https: false
-      }
+      target: "http://localhost:5984/"
     };
 
     // inform grunt that this task is async
     var done = this.async();
 
     // create proxy to couch for all couch requests
-    var proxy = new httpProxy.HttpProxy(proxy_settings);
+    var proxy = httpProxy.createServer(proxy_settings);
 
     http.createServer(function (req, res) {
       var url = req.url.replace('app/',''),
@@ -49,7 +46,7 @@ module.exports = function (grunt) {
           filePath;
 
       if (setContentSecurityPolicy) {
-        var headerValue = "default-src 'self'; img-src 'self'; font-src 'self'; " +
+        var headerValue = "default-src 'self'; img-src 'self' data:; font-src 'self'; " +
                           "script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline';";
         res.setHeader('Content-Security-Policy', headerValue);
       }
@@ -62,15 +59,16 @@ module.exports = function (grunt) {
         filePath = path.join('./',url);
       } else if (!!url.match(/mocha|\/test\/core\/|test\.config/)) {
         filePath = path.join('./test', url.replace('/test/',''));
+      } else if (!!url.match(/fonts/)) {
+        filePath = path.join(dist_dir,url.split('?v=')[0]);
       } else if (!!url.match(/\.css|img/)) {
         url = url.replace(/\?.*/, '');
         filePath = path.join(dist_dir,url);
-      /*} else if (!!url.match(/\/js\//)) {
-        // serve any javascript or files from dist debug dir
-        filePath = path.join(dist_dir,req.url);*/
       } else if (!!url.match(/\.js$|\.html$/)) {
         // server js from app directory
         filePath = path.join(app_dir, url.replace('/_utils/fauxton/',''));
+      } else if (!!url.match(/ZeroClipboard/)) {
+        filePath = "./assets/js/plugins/zeroclipboard/ZeroClipboard.swf"
       } else if (!!url.match(/testrunner/)) {
         var testSetup = grunt.util.spawn({cmd: 'grunt', grunt: true, args: ['test_inline']}, function (error, result, code) {/* log.writeln(String(result));*/ });
         testSetup.stdout.pipe(process.stdout);
@@ -80,6 +78,10 @@ module.exports = function (grunt) {
         // serve main index file from here
         filePath = path.join(dist_dir, 'index.html');
       };
+
+      if (/_utils\/docs/.test(filePath)) {
+        filePath = false;
+      }
 
       if (filePath) {
         return send(req, filePath)
@@ -97,8 +99,17 @@ module.exports = function (grunt) {
           .pipe(res);
       }
 
-      proxy.proxyRequest(req, res);
+      // This sets the Host header in the proxy so that one can use external
+      // CouchDB instances and not have the Host set to 'localhost'
+      var urlObj = urlLib.parse(req.url);
+      req.headers['host'] = urlObj.host;
+
+      proxy.web(req, res);
     }).listen(port);
+
+    proxy.on('error', function (e) {
+      // don't explode on cancelled requests
+    });
 
     // Fail this task if any errors have been logged
     if (grunt.errors) {

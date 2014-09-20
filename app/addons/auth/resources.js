@@ -101,6 +101,10 @@ function (app, FauxtonAPI, CouchdbSession) {
       var user = this.user();
 
       if (user && user.roles) {
+        if (user.roles.indexOf('fx_loggedIn') === -1) {
+          user.roles.push('fx_loggedIn');
+        }
+
         return user.roles;
       }
 
@@ -260,6 +264,7 @@ function (app, FauxtonAPI, CouchdbSession) {
 
   Auth.LoginView = FauxtonAPI.View.extend({
     template: 'addons/auth/templates/login',
+    className: "row-fluid",
     initialize: function (options) {
       this.urlBack = options.urlBack || "";
     },
@@ -364,6 +369,7 @@ function (app, FauxtonAPI, CouchdbSession) {
 
   Auth.NoAccessView = FauxtonAPI.View.extend({
     template: "addons/auth/templates/noAccess",
+    className: "row-fluid",
 
     initialize: function (options) {
       this.urlBack = options.urlBack || "";
