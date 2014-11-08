@@ -35,7 +35,7 @@ function (app, FauxtonAPI, CouchdbSession) {
   var Admin = Backbone.Model.extend({
 
     url: function () {
-      return app.host + '/_config/admins/' + this.get("name");
+      return app.host + './_config/admins/' + this.get("name");
     },
 
     isNew: function () { return false; },
@@ -60,7 +60,7 @@ function (app, FauxtonAPI, CouchdbSession) {
   });
 
   Auth.Session = CouchdbSession.Session.extend({
-    url: app.host + '/_session',
+    url: app.host + './_session',
 
     initialize: function (options) {
       if (!options) { options = {}; }
@@ -174,7 +174,7 @@ function (app, FauxtonAPI, CouchdbSession) {
       return $.ajax({
         cache: false,
         type: "POST",
-        url: app.host + "/_session",
+        url: app.host + "./_session",
         dataType: "json",
         data: {name: username, password: password}
       }).then(function () {
@@ -187,7 +187,7 @@ function (app, FauxtonAPI, CouchdbSession) {
 
       return $.ajax({
         type: "DELETE",
-        url: app.host + "/_session",
+        url: app.host + "./_session",
         dataType: "json",
         username : "_",
         password : "_"
