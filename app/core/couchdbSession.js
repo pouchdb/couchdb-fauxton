@@ -14,7 +14,7 @@ define([
 function (FauxtonAPI) {
   var CouchdbSession = {
     Session: FauxtonAPI.Model.extend({
-      url: '/_session',
+      url: './_session',
 
       user: function () {
         var userCtx = this.get('userCtx');

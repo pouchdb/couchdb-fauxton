@@ -39,8 +39,8 @@
           "cachebuster": "?v1.0"
         },
         "app": {
-          "root": "/express-pouchdb/_utils/fauxton/",
-          "host": "/express-pouchdb",
+          "root": "./_utils/fauxton/",
+          "host": "./",
           "version": "1.0"
         }
       },
