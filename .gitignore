@@ -20,6 +20,7 @@ app/addons/*
 !app/addons/styletests
 !app/addons/cors
 !app/addons/setup
+!app/addons/pouchdb-styles
 settings.json*
 i18n.json
 !settings.json.default
