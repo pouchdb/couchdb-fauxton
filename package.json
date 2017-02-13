@@ -1,0 +1,31 @@
+{
+  "name": "pouchdb-fauxton",
+  "version": "0.0.1",
+  "description": "Fork of couchdb-fauxton, styled for PouchDB",
+  "scripts": {
+    "prepublish": "bash prepublish.sh"
+  },
+  "keywords": [
+    "pouchdb",
+    "couchdb",
+    "fauxton",
+    "pouchdb-server",
+    "express-pouchdb"
+  ],
+  "author": "Nolan Lawson <nolan@nolanlawson.com>",
+  "license": "Apache-2.0",
+  "files": [
+    "www"
+  ],
+  "devDependencies": {
+    "replace": "^0.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pouchdb/pouchdb-fauxton.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pouchdb/pouchdb-fauxton/issues"
+  },
+  "homepage": "https://github.com/pouchdb/pouchdb-fauxton#readme"
+}
