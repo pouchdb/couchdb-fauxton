@@ -5,7 +5,7 @@
 # We alter it, rebuild it, and then move the built assets into /fauxton
 #
 
-GIT_HASH=7e7e774
+GIT_HASH=61c2681
 
 FAUXTON_SRC=$(pwd)/fauxton-src
 REPLACE=$(pwd)/node_modules/.bin/replace
