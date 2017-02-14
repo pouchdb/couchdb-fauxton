@@ -16,7 +16,7 @@ rm -fr ${FAUXTON_SRC}
 git clone https://github.com/apache/couchdb-fauxton.git \
   --branch master --single-branch ${FAUXTON_SRC}
 cd ${FAUXTON_SRC}
-git reset ${GIT_HASH}
+git checkout ${GIT_HASH}
 cd ${CURRENT_WD}
 
 # changing these less variables will have a cascading effect across the
