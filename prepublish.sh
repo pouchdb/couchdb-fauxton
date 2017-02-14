@@ -27,7 +27,7 @@ ${REPLACE} \
   ${FAUXTON_SRC}/assets/less/variables.less
 ${REPLACE} \
   "@brandPrimaryDark: @darkRed;" \
-  "@brandPrimaryDark: darken(@pouchBrandPrimary, 10%);" \
+  "@brandPrimaryDark: darken(@brandPrimary, 10%);" \
   ${FAUXTON_SRC}/assets/less/variables.less
 
 # currently no way to configure this, so we search-and-replace the site title
