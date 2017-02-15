@@ -20,7 +20,7 @@ How it works:
 
 Why a separate repo? It takes a while to build couchdb-fauxton, and it would be painful to build couchdb-fauxton from source just to build express-pouchdb/pouchdb-server, so by putting it in a separate module we can just deploy the built files to npm.
 
-## Developpment
+## Development
 
 To update this project to a later version of Fauxton, you'll need to change the `GIT_HASH` in `prepublish.sh`.
 
