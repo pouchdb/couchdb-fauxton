@@ -2,6 +2,7 @@
   "name": "pouchdb-fauxton",
   "version": "0.0.1",
   "description": "Fork of couchdb-fauxton, styled for PouchDB",
+  "main": "www/index.html",
   "scripts": {
     "prepublish": "bash prepublish.sh"
   },
