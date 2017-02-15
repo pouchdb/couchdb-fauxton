@@ -40,6 +40,15 @@ ${REPLACE} \
   "dashboard.assets/img/pouchdb-favicon.ico" \
   ${FAUXTON_SRC}/assets/index.underscore
 
+# another thing it'd be nice to change with a variable: the footer at the
+# bottom of the page
+${REPLACE} \
+  "http://couchdb.apache.org/" "https://github.com/pouchdb/express-pouchdb/" \
+  ${FAUXTON_SRC}/app/addons/fauxton/navigation/components.react.jsx
+${REPLACE} \
+  "Apache CouchDB" "express-pouchdb" \
+  ${FAUXTON_SRC}/app/addons/fauxton/navigation/components.react.jsx
+
 # merge fauxton-merge with ${FAUXTON_SRC}
 # these config files are consumed by Fauxton during build as "addons"
 for filename in `find fauxton-merge -type d | sed 's/fauxton-merge\///'g`; do
