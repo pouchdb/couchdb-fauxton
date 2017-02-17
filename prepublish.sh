@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -x
+set -e
+
 #
 # The main goal of this script is to customize Fauxton to our liking.
 # We alter it, rebuild it, and then move the built assets into /fauxton
@@ -11,11 +14,6 @@ FAUXTON_SRC=$(pwd)/fauxton-src
 REPLACE=$(pwd)/node_modules/.bin/replace
 WWW_TARGET=$(pwd)/www
 CURRENT_WD=$(pwd)
-
-if [ ! -x ${REPLACE} ]; then
-  echo 'please do npm install first'
-  exit 1;
-fi
 
 rm -fr ${FAUXTON_SRC}
 git clone https://github.com/apache/couchdb-fauxton.git \
