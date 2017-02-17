@@ -12,6 +12,11 @@ REPLACE=$(pwd)/node_modules/.bin/replace
 WWW_TARGET=$(pwd)/www
 CURRENT_WD=$(pwd)
 
+if [ ! -x ${REPLACE} ]; then
+  echo 'please do npm install first'
+  exit 1;
+fi
+
 rm -fr ${FAUXTON_SRC}
 git clone https://github.com/apache/couchdb-fauxton.git \
   --branch master --single-branch ${FAUXTON_SRC}
