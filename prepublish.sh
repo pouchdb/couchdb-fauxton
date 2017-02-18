@@ -40,7 +40,7 @@ ${REPLACE} \
   ${FAUXTON_SRC}/assets/index.underscore
 ${REPLACE} \
   "dashboard.assets/img/couchdb-logo.png" \
-  "dashboard.assets/img/pouchdb-favicon.ico" \
+  "dashboard.assets/img/pouchdb-favicon.png" \
   ${FAUXTON_SRC}/assets/index.underscore
 
 # another thing it'd be nice to change with a variable: the footer at the
