@@ -1,6 +1,6 @@
 {
   "name": "pouchdb-fauxton",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Fork of couchdb-fauxton, styled for PouchDB",
   "main": "www/index.html",
   "scripts": {
