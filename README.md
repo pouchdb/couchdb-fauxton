@@ -1,6 +1,8 @@
 pouchdb-fauxton
 ====
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/pouchdb/pouchdb-fauxton.svg)](https://greenkeeper.io/)
+
 Fork/modification of [couchdb-fauxton](https://github.com/apache/couchdb-fauxton) designed for [pouchdb-server](https://github.com/pouchdb/pouchdb-server) and [express-pouchdb](https://github.com/pouchdb/express-pouchdb)
 
 ## Usage
